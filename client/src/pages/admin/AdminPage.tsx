@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { Button } from '@/shared/shadcn/ui/button';
-import { Dialog, DialogTrigger } from '@/shared/shadcn/ui/dialog';
+import { Button } from '@/shared/ui/shadcn/button';
+import { Dialog, DialogTrigger } from '@/shared/ui/shadcn/dialog';
 
 import { AddBrandModal } from './components/AddBrandModal';
 import { AddDeviceModal } from './components/AddDeviceModal';

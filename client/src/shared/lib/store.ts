@@ -1,13 +1,28 @@
-import { createContext, useContext } from 'react';
+import { useSyncExternalStore } from 'react';
 
-const StoreContext = createContext<RootStore | null>(null);
+export const createStore = <T>(initialState: T) => {
+  let state = initialState;
 
-export const StoreProvider = StoreContext.Provider;
+  let listeners: (() => void)[] = [];
 
-export const useStore = () => {
-  const store = useContext(StoreContext);
+  const subscribe = (cb: () => void) => {
+    listeners.push(cb);
+    return () => {
+      listeners = listeners.filter((listener) => listener !== cb);
+    };
+  };
 
-  if (!store) throw new Error('useStore must be used within a StoreProvider');
-
-  return store;
+  return {
+    subscribe,
+    getState: () => state,
+    update: (newState: Partial<T>) => {
+      state = { ...state, ...newState };
+      listeners.forEach((listener) => listener());
+    },
+  };
 };
+
+export const useSelector = <T, R>(
+  store: ReturnType<typeof createStore<T>>,
+  selector: (state: T) => R,
+) => useSyncExternalStore(store.subscribe, () => selector(store.getState()));

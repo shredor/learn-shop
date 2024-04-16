@@ -87,7 +87,6 @@ class DeviceController {
 
   async getOne(req: Request, res: Response) {
     const { id } = req.params;
-    const userId = req.user?.id;
 
     const device = await Device.findOne({
       where: { id },
@@ -99,14 +98,6 @@ class DeviceController {
               `(SELECT COALESCE(AVG(rate)::FLOAT, 0) FROM ratings WHERE "ratings"."deviceId" = "Device"."id")`,
             ),
             'avgRating',
-          ],
-          [
-            Sequelize.literal(
-              userId
-                ? `(SELECT CASE WHEN COUNT("basket_devices"."id") > 0 THEN TRUE ELSE FALSE END FROM basket_devices WHERE "basket_devices"."deviceId" = "Device"."id" AND "basket_devices"."basketId" IN (SELECT "id" FROM baskets WHERE "userId" = ${userId}))`
-                : `FALSE`,
-            ),
-            'isInBasket',
           ],
         ],
       },

@@ -7,9 +7,9 @@ import { useIsAuth, useUserStore } from '@/entities/user/model/user.store';
 import { User } from '@/entities/user/model/user.types';
 
 import { routes } from '@/shared/lib/router';
-import { Button } from '@/shared/shadcn/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/shadcn/ui/card';
-import { Input } from '@/shared/shadcn/ui/input';
+import { Button } from '@/shared/ui/shadcn/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/shadcn/card';
+import { Input } from '@/shared/ui/shadcn/input';
 
 export const RegistrationPage = () => {
   const id = useId();

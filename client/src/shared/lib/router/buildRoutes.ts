@@ -23,7 +23,7 @@ type Routes<T extends Record<string, string>> = Simplify<{
 const buildSearchParamsString = (search?: Record<string, string>) =>
   search ? `?${new URLSearchParams(search).toString()}` : '';
 
-const buildRoutes = <T extends Record<string, string>>(patterns: T): Routes<T> => {
+export const buildRoutes = <T extends Record<string, string>>(patterns: T): Routes<T> => {
   return Object.keys(patterns).reduce((acc, key) => {
     const pattern = patterns[key];
     const hasParams = parse(pattern).keys.length > 0;
@@ -45,12 +45,3 @@ const buildRoutes = <T extends Record<string, string>>(patterns: T): Routes<T> =
     return acc;
   }, {} as Routes<T>);
 };
-
-export const routes = buildRoutes({
-  admin: '/admin',
-  login: '/login',
-  registration: '/registration',
-  cart: '/cart',
-  device: '/device/:id',
-  shop: '/',
-} as const);

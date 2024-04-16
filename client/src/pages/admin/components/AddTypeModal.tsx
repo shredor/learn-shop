@@ -2,15 +2,15 @@ import React, { useId, useState } from 'react';
 
 import { deviceApi } from '@/entities/device/api/device.api';
 
-import { Button } from '@/shared/shadcn/ui/button';
+import { Button } from '@/shared/ui/shadcn/button';
 import {
   DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/shared/shadcn/ui/dialog';
-import { Input } from '@/shared/shadcn/ui/input';
+} from '@/shared/ui/shadcn/dialog';
+import { Input } from '@/shared/ui/shadcn/input';
 
 type AddTypeModalProps = {
   close: () => void;

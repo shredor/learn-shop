@@ -1,4 +1,4 @@
-import { cn } from '@/shared/shadcn/utils';
+import { cn } from '@/shared/lib/shadcn/utils';
 
 type LoaderProps = {
   className?: string;

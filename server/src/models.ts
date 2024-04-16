@@ -33,15 +33,15 @@ class User extends Model {
   @Column
   role!: string;
 
-  @HasOne(() => Basket)
-  basket!: Basket;
+  @HasOne(() => Cart)
+  cart!: Cart;
 
   @HasMany(() => Rating)
   ratings!: Rating[];
 }
 
-@Table({ tableName: 'baskets' })
-class Basket extends Model {
+@Table({ tableName: 'carts' })
+class Cart extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -54,27 +54,27 @@ class Basket extends Model {
   @BelongsTo(() => User)
   user!: User;
 
-  @HasMany(() => BasketDevice)
-  basketDevices!: BasketDevice[];
+  @HasMany(() => CartDevice)
+  cartDevices!: CartDevice[];
 }
 
-@Table({ tableName: 'basket_devices' })
-class BasketDevice extends Model {
+@Table({ tableName: 'cart_devices' })
+class CartDevice extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column
   id!: number;
 
-  @ForeignKey(() => Basket)
+  @ForeignKey(() => Cart)
   @Column
-  basketId!: number;
+  cartId!: number;
 
   @ForeignKey(() => Device)
   @Column
   deviceId!: number;
 
-  @BelongsTo(() => Basket)
-  basket!: Basket;
+  @BelongsTo(() => Cart)
+  cart!: Cart;
 
   @BelongsTo(() => Device)
   device!: Device;
@@ -117,8 +117,8 @@ class Device extends Model {
   @HasMany(() => Rating)
   ratings!: Rating[];
 
-  @HasMany(() => BasketDevice)
-  basketDevices!: BasketDevice[];
+  @HasMany(() => CartDevice)
+  cartDevices!: CartDevice[];
 
   @HasMany(() => DeviceInfo)
   info!: DeviceInfo[];
@@ -227,16 +227,6 @@ class TypeBrand extends Model {
   brandId!: number;
 }
 
-sequelize.addModels([
-  User,
-  Basket,
-  BasketDevice,
-  Device,
-  Type,
-  Brand,
-  Rating,
-  DeviceInfo,
-  TypeBrand,
-]);
+sequelize.addModels([User, Cart, CartDevice, Device, Type, Brand, Rating, DeviceInfo, TypeBrand]);
 
-export { Basket, BasketDevice, Brand, Device, DeviceInfo, Rating, Type, TypeBrand, User };
+export { Cart, CartDevice, Brand, Device, DeviceInfo, Rating, Type, TypeBrand, User };

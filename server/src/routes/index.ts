@@ -3,7 +3,7 @@ import { brandRouter } from './brandRouter';
 import { deviceRouter } from './deviceRouter';
 import { typeRouter } from './typeRouter';
 import { userRouter } from './userRouter';
-import { basketDeviceRouter } from './basketDeviceRouter';
+import { cartDeviceRouter } from './cartDeviceRouter';
 import { authMiddleware } from '../middleware/AuthMiddleware';
 import { ratingRouter } from './ratingRouter';
 
@@ -14,6 +14,6 @@ apiRouter.use('/device', deviceRouter);
 apiRouter.use('/type', typeRouter);
 apiRouter.use('/user', userRouter);
 apiRouter.use('/rating', ratingRouter);
-apiRouter.use('/basket-device', authMiddleware, basketDeviceRouter);
+apiRouter.use('/cart-device', authMiddleware, cartDeviceRouter);
 
 export { apiRouter };

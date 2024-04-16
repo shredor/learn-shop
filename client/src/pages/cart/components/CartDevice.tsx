@@ -9,7 +9,7 @@ import { Device } from '@/entities/device/model/device.types';
 
 import { getStaticUrl } from '@/shared/config';
 import { routes } from '@/shared/lib/router';
-import { Button } from '@/shared/shadcn/ui/button';
+import { Button } from '@/shared/ui/shadcn/button';
 
 type Props = {
   cartDevieId: number;
@@ -22,7 +22,7 @@ export const CartDevice = observer(({ device, cartDevieId }: Props) => {
 
   const removeFromCart = () => {
     cartApi
-      .removeDeviceFromCart({ basketDeviceId: cartDevieId })
+      .removeDeviceFromCart({ cartDeviceId: cartDevieId })
       .then(() => removeCartDevice(cartDevieId));
   };
 

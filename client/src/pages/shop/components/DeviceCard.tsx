@@ -7,7 +7,7 @@ import { Device } from '@/entities/device/model/device.types';
 import { getStaticUrl } from '@/shared/config';
 import { routes } from '@/shared/lib/router';
 import { enableViewTransitionOnce } from '@/shared/lib/router/useBrowserViewTransitionPathname';
-import { cn } from '@/shared/shadcn/utils';
+import { cn } from '@/shared/lib/shadcn/utils';
 
 type Props = {
   device: Device;

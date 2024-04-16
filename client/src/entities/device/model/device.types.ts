@@ -27,5 +27,5 @@ export type Device = {
 };
 
 export type DeviceWithCartInfo = Device & {
-  isInBasket: boolean;
+  isInCart: boolean;
 };

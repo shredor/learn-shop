@@ -2,25 +2,25 @@ import { api } from '@/shared/lib/fetch';
 
 export const cartApi = {
   getCartDevices: async () => {
-    const data = await api.get('/basket-device');
+    const data = await api.get('/cart-device');
     return data;
   },
 
   addDeviceToCart: async (deviceId: number) => {
-    const data = await api.post('/basket-device', { deviceId });
+    const data = await api.post('/cart-device', { deviceId });
     return data;
   },
 
   removeDeviceFromCart: async ({
     deviceId,
-    basketDeviceId,
+    cartDeviceId,
   }: {
     deviceId?: number;
-    basketDeviceId?: number;
+    cartDeviceId?: number;
   }) => {
-    const data = basketDeviceId
-      ? await api.delete(`/basket-device/${basketDeviceId}`)
-      : await api.delete(`/basket-device`, { deviceId });
+    const data = cartDeviceId
+      ? await api.delete(`/cart-device/${cartDeviceId}`)
+      : await api.delete(`/cart-device`, { deviceId });
     return data;
   },
 };

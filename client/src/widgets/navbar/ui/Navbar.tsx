@@ -6,7 +6,7 @@ import { useIsAuth, useUserStore } from '@/entities/user/model/user.store';
 
 import { setAuthToken } from '@/shared/lib/fetch';
 import { routes } from '@/shared/lib/router';
-import { cn } from '@/shared/shadcn/utils';
+import { cn } from '@/shared/lib/shadcn/utils';
 
 export const Navbar = observer(() => {
   const { setUser } = useUserStore();

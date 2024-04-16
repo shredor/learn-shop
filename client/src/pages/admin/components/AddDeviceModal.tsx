@@ -4,23 +4,23 @@ import { Fragment, useEffect, useId, useState } from 'react';
 import { deviceApi } from '@/entities/device/api/device.api';
 import { useDeviceStore } from '@/entities/device/model/device.store';
 
-import { Button } from '@/shared/shadcn/ui/button';
+import { Button } from '@/shared/ui/shadcn/button';
 import {
   DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/shared/shadcn/ui/dialog';
-import { Input } from '@/shared/shadcn/ui/input';
-import { Label } from '@/shared/shadcn/ui/label';
+} from '@/shared/ui/shadcn/dialog';
+import { Input } from '@/shared/ui/shadcn/input';
+import { Label } from '@/shared/ui/shadcn/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/shadcn/ui/select';
+} from '@/shared/ui/shadcn/select';
 
 type AddDeviceModalProps = {
   close: () => void;

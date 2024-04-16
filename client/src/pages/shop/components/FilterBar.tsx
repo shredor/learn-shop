@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { Link } from 'wouter';
 
 import { useHistoryState, usePathname } from '@/shared/lib/router/useBrowserViewTransitionPathname';
-import { cn } from '@/shared/shadcn/utils';
+import { cn } from '@/shared/lib/shadcn/utils';
 
 type Props<T extends { id: number; name: string }> = {
   className?: string;

@@ -1,19 +1,5 @@
 import { API_URL } from '@/shared/config';
 
-const getAuthTokenFromStorage = () => localStorage.getItem('authToken') || '';
-
-const saveAuthTokenToStorage = (token: string | null) =>
-  token ? localStorage.setItem('authToken', token) : localStorage.removeItem('authToken');
-
-let authToken = getAuthTokenFromStorage();
-
-export const setAuthToken = (token: string | null) => {
-  authToken = token || '';
-  saveAuthTokenToStorage(token);
-};
-
-export const getHasAuthToken = () => !!authToken;
-
 class ApiError extends Error {
   data: Record<string, unknown>;
 
@@ -23,7 +9,11 @@ class ApiError extends Error {
   }
 }
 
-const wrapFetch = (method: string) => (path: string, body?: unknown) => {
+type IOptions = {
+  getAdditionalHeaders: () => Record<string, string>;
+};
+
+const wrapFetch = (method: string, options?: IOptions) => (path: string, body?: unknown) => {
   let preparedPath = path;
   if (method === 'GET' && body && Object.keys(body).length) {
     const queryString = Object.entries(body)
@@ -58,15 +48,29 @@ const wrapFetch = (method: string) => (path: string, body?: unknown) => {
     }
   }
 
-  const authHeaders: Record<string, string> = authToken
-    ? { Authorization: `Bearer ${authToken}` }
-    : {};
+  //   const getAuthTokenFromStorage = () => localStorage.getItem('authToken') || '';
+
+  // const saveAuthTokenToStorage = (token: string | null) =>
+  //   token ? localStorage.setItem('authToken', token) : localStorage.removeItem('authToken');
+
+  // let authToken = getAuthTokenFromStorage();
+
+  // export const setAuthToken = (token: string | null) => {
+  //   authToken = token || '';
+  //   saveAuthTokenToStorage(token);
+  // };
+
+  // export const getHasAuthToken = () => !!authToken;
+
+  // const authHeaders: Record<string, string> = authToken
+  //   ? { Authorization: `Bearer ${authToken}` }
+  //   : {};
 
   return fetch(`${API_URL}${preparedPath}`, {
     method,
     headers: {
-      ...authHeaders,
       ...contentTypeHeader,
+      ...options?.getAdditionalHeaders(),
     },
     body: bodyInit,
   }).then(async (response) => {
@@ -74,15 +78,15 @@ const wrapFetch = (method: string) => (path: string, body?: unknown) => {
       return response.json();
     } else {
       const errorData = await response.json().catch(() => ({}));
-      const error = new ApiError(errorData.message || 'Network response was not ok', errorData);
+      const error = new ApiError(errorData.message || 'Network error', errorData);
       throw error;
     }
   });
 };
 
-export const api = {
-  get: wrapFetch('GET'),
-  post: wrapFetch('POST'),
-  put: wrapFetch('PUT'),
-  delete: wrapFetch('DELETE'),
-};
+export const createApi = (options: IOptions) => ({
+  get: wrapFetch('GET', options),
+  post: wrapFetch('POST', options),
+  put: wrapFetch('PUT', options),
+  delete: wrapFetch('DELETE', options),
+});

@@ -3,7 +3,7 @@ import { ApiError } from '../error/ApiError';
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { Basket, User } from '../models';
+import { Cart, User } from '../models';
 
 function generateJwt({ id, role, email }: { id: number; role: string; email: string }) {
   return jwt.sign({ id, role, email }, process.env.SECRET_KEY || '', {
@@ -28,7 +28,7 @@ class UserController {
     const hashPassword = await bcrypt.hash(password, 5);
 
     const user = await User.create({ email, role, password: hashPassword });
-    await Basket.create({ userId: user.id });
+    await Cart.create({ userId: user.id });
     const token = generateJwt({ id: user.id, role: user.role, email: user.email });
 
     res.json({ token });

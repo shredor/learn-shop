@@ -3,10 +3,10 @@
  * Based on wouter use-browser-location
  */
 
-import { useEffect, useSyncExternalStore } from 'react';
-import { useEvent } from 'react-use-event-hook';
 import { BaseLocationHook } from 'wouter';
 import { navigate } from 'wouter/use-browser-location';
+
+import { createStore, useSelector } from '@/shared/lib/store';
 
 const eventPopstate = 'popstate';
 const eventPushState = 'pushState';
@@ -34,68 +34,32 @@ export const enableViewTransitionOnce = () => {
   shouldUseViewTransitionOnce = true;
 };
 
-const store = (() => {
-  let state = {
-    pathname: location.pathname,
-    id: 0,
-    event: 'initial',
-    historyState: history.state,
-  };
-
-  let listeners: (() => void)[] = [];
-
-  const subscribe = (cb: () => void) => {
-    listeners.push(cb);
-    return () => {
-      listeners = listeners.filter((listener) => listener !== cb);
-    };
-  };
-
-  return {
-    subscribe,
-    getState: () => state,
-    updatePathname: (pathname: string, event: string) => {
-      state = { pathname, id: state.id + 1, event, historyState: history.state };
-      listeners.forEach((listener) => listener());
-    },
-  };
-})();
+const store = createStore({
+  pathname: location.pathname,
+  id: 0,
+  event: 'initial',
+  historyState: history.state,
+});
 
 const setPathname = (pathname: string, event: string = 'manual') => {
-  const isChanged = pathname !== store.getState().pathname;
+  const state = store.getState();
+  const isChanged = pathname !== state.pathname;
 
   if (isChanged && shouldUseViewTransitionOnce && document.startViewTransition) {
     shouldUseViewTransitionOnce = false;
 
     return document.startViewTransition(() => {
-      store.updatePathname(pathname, event);
+      store.update({ id: state.id + 1, pathname, event });
     });
   }
 
-  store.updatePathname(pathname, event);
+  store.update({ id: state.id + 1, pathname, event });
 };
 
 subscribeToLocationUpdates((event) => setPathname(location.pathname, event));
 
-export const usePathname = () =>
-  useSyncExternalStore(store.subscribe, () => store.getState().pathname);
+export const usePathname = () => useSelector(store, ({ pathname }) => pathname);
 
-export const useNavigationId = () =>
-  useSyncExternalStore(store.subscribe, () => store.getState().id);
-
-export const useHistoryState = () =>
-  useSyncExternalStore(store.subscribe, () => store.getState().historyState);
-
-export const usePushStateEffect = (fn: () => void) => {
-  const id = useNavigationId();
-
-  const fnStable = useEvent(fn);
-
-  useEffect(() => {
-    if (store.getState().event !== eventPushState) return;
-
-    fnStable();
-  }, [id, fnStable]);
-};
+export const useHistoryState = () => useSelector(store, ({ historyState }) => historyState);
 
 export const useBrowserViewTransitionPathname: BaseLocationHook = () => [usePathname(), navigate];

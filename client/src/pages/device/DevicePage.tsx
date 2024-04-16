@@ -11,8 +11,8 @@ import { DeviceWithCartInfo } from '@/entities/device/model/device.types';
 import { useIsAuth } from '@/entities/user/model/user.store';
 
 import { routes } from '@/shared/lib/router';
-import { Button } from '@/shared/shadcn/ui/button';
-import { cn } from '@/shared/shadcn/utils';
+import { Button } from '@/shared/ui/shadcn/button';
+import { cn } from '@/shared/lib/shadcn/utils';
 
 export const DevicePage = observer(() => {
   const { getBrand } = useDeviceStore();
@@ -38,7 +38,7 @@ export const DevicePage = observer(() => {
     if (!isAuth) return navigate(routes.registration.build());
 
     cartApi.addDeviceToCart(device.id).then(() => {
-      device.isInBasket = true;
+      device.isInCart = true;
     });
   };
 
@@ -46,7 +46,7 @@ export const DevicePage = observer(() => {
     if (!device.id) return;
 
     cartApi.removeDeviceFromCart({ deviceId: device.id }).then(() => {
-      device.isInBasket = false;
+      device.isInCart = false;
     });
   };
 
@@ -81,7 +81,7 @@ export const DevicePage = observer(() => {
             <span>{device.avgRating || 'No ratings yet'}</span>
           </div>
           <div className="text-2xl mb-6">{device.price} €</div>
-          {device.isInBasket ? (
+          {device.isInCart ? (
             <Button
               key="Remove"
               onClick={removeFromCart}
