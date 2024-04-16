@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 217 100% 100%;
+    --foreground: 217 5% 10%;
+    --card: 217 50% 100%;
+    --card-foreground: 217 5% 15%;
+    --popover: 217 100% 100%;
+    --popover-foreground: 217 100% 10%;
+    --primary: 217 45% 27%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 30% 90%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 179 30% 95%;
+    --muted-foreground: 217 5% 40%;
+    --accent: 179 30% 90%;
+    --accent-foreground: 217 5% 15%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 217 5% 100%;
+    --border: 217 30% 82%;
+    --input: 217 30% 50%;
+    --ring: 217 45% 27%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 217 50% 10%;
+    --foreground: 217 5% 100%;
+    --card: 217 50% 10%;
+    --card-foreground: 217 5% 100%;
+    --popover: 217 50% 5%;
+    --popover-foreground: 217 5% 100%;
+    --primary: 217 45% 27%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 30% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 179 30% 25%;
+    --muted-foreground: 217 5% 65%;
+    --accent: 179 30% 25%;
+    --accent-foreground: 217 5% 95%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 217 5% 100%;
+    --border: 217 30% 50%;
+    --input: 217 30% 50%;
+    --ring: 217 45% 27%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+::view-transition-old(device-card),
+::view-transition-new(device-card) {
+  height: 100%;
+  width: 100%;
+}
+
+input[type='file']::file-selector-button {
+  color: inherit;
+}
