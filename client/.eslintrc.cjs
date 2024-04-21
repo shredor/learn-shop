@@ -8,6 +8,7 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:prettier/recommended',
     'plugin:import/recommended',
+    'plugin:@reatom/recommended',
   ],
   settings: {
     react: {
@@ -27,7 +28,7 @@ module.exports = {
     project: ['./tsconfig.json', './tsconfig.node.json'],
     tsconfigRootDir: __dirname,
   },
-  plugins: ['import', 'react-refresh', 'eslint-plugin-import-helpers'],
+  plugins: ['@reatom', 'import', 'react-refresh', 'eslint-plugin-import-helpers'],
   rules: {
     'no-restricted-imports': [
       'error',

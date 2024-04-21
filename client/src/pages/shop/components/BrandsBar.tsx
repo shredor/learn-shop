@@ -1,9 +1,7 @@
+import { useAtom } from '@reatom/npm-react';
 import { observer } from 'mobx-react-lite';
 
-import { deviceApi } from '@/entities/device/api/device.api';
-import { Brand } from '@/entities/device/model/device.types';
-
-import useAsync from '@/shared/lib/useAsync';
+import { brandsResource } from '@/entities/device/model/device.model';
 
 import { FilterBar } from './FilterBar';
 
@@ -11,17 +9,10 @@ type Props = {
   className?: string;
 };
 
-const empty: never[] = [];
-
 export const BrandsBar = observer(({ className }: Props) => {
-  const { value: brands } = useAsync<Brand[]>(deviceApi.getBrands);
+  const brands = useAtom(brandsResource.dataAtom)[0];
 
   return (
-    <FilterBar
-      title="Brand"
-      className={className}
-      items={brands || empty}
-      historyStateProperty="brandId"
-    />
+    <FilterBar title="Brand" className={className} items={brands} historyStateProperty="brandId" />
   );
 });

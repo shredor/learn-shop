@@ -1,8 +1,11 @@
-import { observer } from 'mobx-react-lite';
-import { Fragment, useEffect, useId, useState } from 'react';
+import { useAction, useAtom } from '@reatom/npm-react';
+import { Fragment, useId, useState } from 'react';
 
-import { deviceApi } from '@/entities/device/api/device.api';
-import { useDeviceStore } from '@/entities/device/model/device.store';
+import {
+  addDeviceAction,
+  brandsResource,
+  typesResource,
+} from '@/entities/device/model/device.model';
 
 import { Button } from '@/shared/ui/shadcn/button';
 import {
@@ -26,21 +29,17 @@ type AddDeviceModalProps = {
   close: () => void;
 };
 
-const AddDeviceForm = observer(({ close }: AddDeviceModalProps) => {
+const AddDeviceForm = ({ close }: AddDeviceModalProps) => {
   const id = useId();
-  const { types, brands } = useDeviceStore();
+  const types = useAtom(typesResource.dataAtom)[0];
+  const brands = useAtom(brandsResource.dataAtom)[0];
+  const addDevice = useAction(addDeviceAction);
   const [name, setName] = useState('');
   const [price, setPrice] = useState<string>('');
   const [img, setImg] = useState<File>();
   const [typeId, setTypeId] = useState<string>('');
   const [brandId, setBrandId] = useState<string>('');
   const [info, setInfo] = useState<{ title: string; description: string; number: number }[]>([]);
-  const { setTypes, setBrands } = useDeviceStore();
-
-  useEffect(() => {
-    deviceApi.getTypes().then((data) => setTypes(data));
-    deviceApi.getBrands().then((data) => setBrands(data));
-  }, [setBrands, setTypes]);
 
   const typeHtmlId = `${id}-type`;
   const brandHtmlId = `${id}-brand`;
@@ -74,18 +73,16 @@ const AddDeviceForm = observer(({ close }: AddDeviceModalProps) => {
     e.preventDefault();
     if (!price || !img || !price || !brandId || !typeId) return;
 
-    deviceApi
-      .createDevice({
-        name,
-        price: +price,
-        brandId: +brandId,
-        typeId: +typeId,
-        info,
-        img,
-      })
-      .then(() => {
-        close();
-      });
+    addDevice({
+      name,
+      price: +price,
+      brandId: +brandId,
+      typeId: +typeId,
+      info,
+      img,
+    }).then(() => {
+      close();
+    });
   };
 
   return (
@@ -208,7 +205,7 @@ const AddDeviceForm = observer(({ close }: AddDeviceModalProps) => {
       </DialogFooter>
     </form>
   );
-});
+};
 
 export const AddDeviceModal = ({ close }: AddDeviceModalProps) => (
   <DialogContent className="w-10/12 max-w-md rounded-lg">

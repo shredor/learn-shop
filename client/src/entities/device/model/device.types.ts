@@ -24,6 +24,7 @@ export type Device = {
   brandId: number;
   avgRating: number;
   info: DeviceInfo[];
+  hasUserRated?: boolean;
 };
 
 export type DeviceWithCartInfo = Device & {

@@ -1,24 +1,27 @@
+import { createCtx } from '@reatom/core';
+import { connectLogger } from '@reatom/framework';
+import { reatomContext } from '@reatom/npm-react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-
-import { App } from '@/app/App';
-import { createStore } from '@/app/store/store';
-
-import { StoreProvider } from '@/shared/lib/store';
-
-import '@/app/styles/index.css';
-import { useBrowserViewTransitionPathname } from '@/shared/lib/router';
-
 import { Router } from 'wouter';
 
-const store = createStore();
+import { App } from '@/app/App';
+
+import '@/app/styles/index.css';
+import { useWouterPathname } from '@/shared/lib/router/hooks';
+
+const ctx = createCtx();
+
+connectLogger(ctx, {
+  skipUnnamed: false,
+});
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Router hook={useBrowserViewTransitionPathname}>
-      <StoreProvider value={store}>
+    <Router hook={useWouterPathname}>
+      <reatomContext.Provider value={ctx}>
         <App />
-      </StoreProvider>
+      </reatomContext.Provider>
     </Router>
   </React.StrictMode>,
 );

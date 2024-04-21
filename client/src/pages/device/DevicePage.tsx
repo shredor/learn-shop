@@ -1,56 +1,58 @@
+import { useAction, useAtom } from '@reatom/npm-react';
 import { Star } from 'lucide-react';
-import { observable } from 'mobx';
-import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
-import { useLocation } from 'wouter';
+import { navigate } from 'wouter/use-browser-location';
 
-import { cartApi } from '@/entities/cart/api/cart.api';
-import { deviceApi } from '@/entities/device/api/device.api';
-import { useDeviceStore } from '@/entities/device/model/device.store';
-import { DeviceWithCartInfo } from '@/entities/device/model/device.types';
-import { useIsAuth } from '@/entities/user/model/user.store';
+import {
+  addToCartAction,
+  cartResource,
+  removeFromCartAction,
+} from '@/entities/cart/model/cart.model';
+import {
+  addRatingAction,
+  deviceResource,
+  useBrandName,
+} from '@/entities/device/model/device.model';
+import { isAuthAtom } from '@/entities/user/model/user.model';
 
-import { routes } from '@/shared/lib/router';
-import { Button } from '@/shared/ui/shadcn/button';
+import { routes } from '@/shared/config/routes';
 import { cn } from '@/shared/lib/shadcn/utils';
+import { Button } from '@/shared/ui/shadcn/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/shadcn/popover';
 
-export const DevicePage = observer(() => {
-  const { getBrand } = useDeviceStore();
+export const DevicePage = () => {
+  const isAuth = useAtom(isAuthAtom)[0];
+  const device = useAtom((ctx) => ctx.spy(deviceResource.dataAtom))[0];
+  const brandName = useBrandName(device?.brandId);
+  const isInCart = useAtom(
+    (ctx) => {
+      const cartDevices = ctx.spy(cartResource.dataAtom);
+      return !!cartDevices.find((cartDevice) => cartDevice.deviceId === device?.id);
+    },
+    [device?.id],
+  )[0];
 
-  const [device, setDevice] = useState<
-    DeviceWithCartInfo | ({ info: [] } & Partial<DeviceWithCartInfo>)
-  >({
-    info: [],
-  });
+  const addToCart = useAction(addToCartAction);
+  const removeFromCart = useAction(removeFromCartAction);
+  const addRating = useAction(addRatingAction);
 
-  const [, params] = routes.device.useRoute();
-  const isAuth = useIsAuth();
-  const [, navigate] = useLocation();
-  const deviceId = params?.id || '';
+  if (!device) return null;
 
-  useEffect(() => {
-    deviceApi.getDevice(deviceId).then((device) => setDevice(observable(device)));
-  }, [deviceId]);
-
-  const addToCart = () => {
+  const handleAddRating = (rate: number) => {
     if (!device.id) return;
-
-    if (!isAuth) return navigate(routes.registration.build());
-
-    cartApi.addDeviceToCart(device.id).then(() => {
-      device.isInCart = true;
-    });
+    addRating({ deviceId: device.id, rate });
   };
 
-  const removeFromCart = () => {
+  const handleAddToCart = () => {
     if (!device.id) return;
-
-    cartApi.removeDeviceFromCart({ deviceId: device.id }).then(() => {
-      device.isInCart = false;
-    });
+    if (!isAuth) return navigate(routes.login.build());
+    addToCart(device.id);
   };
 
-  const brand = device.typeId !== undefined ? getBrand(device.typeId) : undefined;
+  const handleRemoveFromCart = () => {
+    if (!device.id) return;
+    if (!isAuth) return navigate(routes.login.build());
+    removeFromCart({ deviceId: device.id });
+  };
 
   return (
     <div className="container py-4">
@@ -68,7 +70,7 @@ export const DevicePage = observer(() => {
         <div className="max-w-16 min-w-4 grow" />
         <div className="pt-4">
           <h1 className="text-3xl font-bold mb-6">
-            {brand?.name} {device.name}
+            {brandName} {device.name}
           </h1>
           <div className="flex items-center text-lg mb-6">
             <Star
@@ -81,26 +83,51 @@ export const DevicePage = observer(() => {
             <span>{device.avgRating || 'No ratings yet'}</span>
           </div>
           <div className="text-2xl mb-6">{device.price} €</div>
-          {device.isInCart ? (
-            <Button
-              key="Remove"
-              onClick={removeFromCart}
-              variant="secondary"
-              size="lg"
-              className="uppercase"
-            >
-              Remove from cart
-            </Button>
-          ) : (
-            <Button key="Add" onClick={addToCart} size="lg" className="uppercase">
-              Add to cart
-            </Button>
-          )}
+          <div className="flex gap-4">
+            {isInCart ? (
+              <Button
+                key="Remove"
+                onClick={handleRemoveFromCart}
+                variant="secondary"
+                size="lg"
+                className="uppercase"
+              >
+                Remove from cart
+              </Button>
+            ) : (
+              <Button key="Add" onClick={handleAddToCart} size="lg" className="uppercase">
+                Add to cart
+              </Button>
+            )}
+            {!device.hasUserRated && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size="icon" className="w-11 h-11 text-gray-200 hover:text-yellow-300">
+                    <Star fill="currentColor" className="w-6 h-6  m-auto " />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="grid gap-4 grid-flow-col">
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                      <Button
+                        onClick={() => handleAddRating(rating)}
+                        variant="outline"
+                        className="p-2"
+                        key={rating}
+                      >
+                        {rating}
+                      </Button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
+          </div>
         </div>
       </div>
       <table className=" container table-auto mx-auto mt-8">
         <tbody>
-          {device.info.map((info) => (
+          {device.info?.map((info) => (
             <tr className="group odd:bg-primary/5 text-lg" key={info.id}>
               <td className="group-odd:rounded-l-lg w-[min(400px,40vw)] px-4 py-2">{info.title}</td>
               <td className="group-odd:rounded-r-lg w-[60vw] px-4 py-2">{info.description}</td>
@@ -110,4 +137,4 @@ export const DevicePage = observer(() => {
       </table>
     </div>
   );
-});
+};

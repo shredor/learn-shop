@@ -1,29 +1,27 @@
+import { useAction } from '@reatom/npm-react';
 import { Trash2 } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { Link } from 'wouter';
 
-import { cartApi } from '@/entities/cart/api/cart.api';
-import { useCartStore } from '@/entities/cart/model/cart.store';
-import { useDeviceStore } from '@/entities/device/model/device.store';
+import { removeFromCartAction } from '@/entities/cart/model/cart.model';
+import { useBrandName } from '@/entities/device/model/device.model';
 import { Device } from '@/entities/device/model/device.types';
 
-import { getStaticUrl } from '@/shared/config';
-import { routes } from '@/shared/lib/router';
+import { routes } from '@/shared/config/routes';
+import { getStaticUrl } from '@/shared/lib/url/staticUrl';
 import { Button } from '@/shared/ui/shadcn/button';
 
 type Props = {
-  cartDevieId: number;
+  cartDeviceId: number;
   device: Device;
 };
 
-export const CartDevice = observer(({ device, cartDevieId }: Props) => {
-  const { removeCartDevice } = useCartStore();
-  const { getBrand } = useDeviceStore();
+export const CartDevice = observer(({ device, cartDeviceId }: Props) => {
+  const brandName = useBrandName(device.brandId);
+  const removeFromCart = useAction(removeFromCartAction);
 
-  const removeFromCart = () => {
-    cartApi
-      .removeDeviceFromCart({ cartDeviceId: cartDevieId })
-      .then(() => removeCartDevice(cartDevieId));
+  const handleRemoveFromCart = () => {
+    removeFromCart({ cartDeviceId });
   };
 
   return (
@@ -38,12 +36,12 @@ export const CartDevice = observer(({ device, cartDevieId }: Props) => {
         to={routes.device.build({ id: device.id })}
         className="grow text-lg font-semibold hover:underline"
       >
-        {getBrand(device.brandId)?.name} {device.name}
+        {brandName} {device.name}
       </Link>
 
       <div className="flex items-center text-secondary-foreground">
         <span className="mr-3">{device.price} €</span>
-        <Button onClick={removeFromCart} className="w-8 h-8" size="icon" variant="secondary">
+        <Button onClick={handleRemoveFromCart} className="w-8 h-8" size="icon" variant="secondary">
           <Trash2 className="w-5 h-5 opacity-70" />
         </Button>
       </div>

@@ -1,42 +1,37 @@
 import { Label } from '@radix-ui/react-label';
+import { useAction, useAtom } from '@reatom/npm-react';
 import { useId, useState } from 'react';
-import { Link, Redirect } from 'wouter';
+import { Link } from 'wouter';
 
-import { userApi } from '@/entities/user/api/user.api';
-import { useIsAuth, useUserStore } from '@/entities/user/model/user.store';
-import { User } from '@/entities/user/model/user.types';
+import { isAuthAtom, registerAction } from '@/entities/user/model/user.model';
 
-import { routes } from '@/shared/lib/router';
+import { routes } from '@/shared/config/routes';
 import { Button } from '@/shared/ui/shadcn/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/shadcn/card';
 import { Input } from '@/shared/ui/shadcn/input';
 
 export const RegistrationPage = () => {
-  const id = useId();
-  const isAuth = useIsAuth();
-  const { setUser } = useUserStore();
+  const register = useAction(registerAction);
+  const [isAuth] = useAtom(isAuthAtom);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const id = useId();
   const emailId = `${id}-email`;
   const passwordId = `${id}-password`;
 
-  if (isAuth) {
-    return <Redirect to={routes.shop.build()} />;
-  }
-
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setErrorMessage('');
-    userApi
-      .registration(email, password)
-      .then((user) => {
-        setUser(user as User);
-      })
-      .catch((e) => {
-        setErrorMessage(e.message);
-      });
+
+    try {
+      await register(email, password);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Something went wrong');
+    }
   };
 
   return (
@@ -52,6 +47,8 @@ export const RegistrationPage = () => {
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor={emailId}>Email</Label>
                 <Input
+                  autoFocus
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   id={emailId}
@@ -61,6 +58,8 @@ export const RegistrationPage = () => {
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor={passwordId}>Password</Label>
                 <Input
+                  type="password"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   id={passwordId}

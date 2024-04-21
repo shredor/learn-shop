@@ -1,5 +1,5 @@
 import { RouteParams, inject, parse } from 'regexparam';
-import { Match, useRoute } from 'wouter';
+import { Match, useParams, useRoute } from 'wouter';
 
 type AllowNumbers<T> = {
   [P in keyof T]: T[P] | number;
@@ -17,6 +17,8 @@ type Routes<T extends Record<string, string>> = Simplify<{
     pattern: T[K];
     build: BuildFn<T[K]>;
     useRoute: () => Simplify<Match<RouteParams<T[K]>>>;
+    useParams: () => RouteParams<T[K]>;
+    parse: (path: string) => Match<RouteParams<T[K]>>[1];
   };
 }>;
 
@@ -40,6 +42,12 @@ export const buildRoutes = <T extends Record<string, string>>(patterns: T): Rout
       pattern,
       build,
       useRoute: () => useRoute(pattern),
+      useParams,
+      parse: (path: string) => {
+        const { pattern: matchedPattern, keys } = parse(pattern);
+        const [base, ...matches] = matchedPattern.exec(path) || [];
+        return base ? Object.fromEntries(keys.map((key, i) => [key, matches[i]])) : null;
+      },
     };
 
     return acc;

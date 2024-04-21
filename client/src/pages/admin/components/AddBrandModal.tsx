@@ -1,6 +1,7 @@
+import { useAction } from '@reatom/npm-react';
 import { useId, useState } from 'react';
 
-import { deviceApi } from '@/entities/device/api/device.api';
+import { addBrandAction } from '@/entities/device/model/device.model';
 
 import { Button } from '@/shared/ui/shadcn/button';
 import {
@@ -19,10 +20,11 @@ type AddBrandModalProps = {
 const AddBrandForm = ({ close }: AddBrandModalProps) => {
   const id = useId();
   const [name, setName] = useState('');
+  const addBrand = useAction(addBrandAction);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    deviceApi.createBrand(name).then(() => {
+    addBrand(name).then(() => {
       close();
     });
   };

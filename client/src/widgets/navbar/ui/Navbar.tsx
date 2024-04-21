@@ -1,21 +1,16 @@
+import { useAction, useAtom } from '@reatom/npm-react';
 import { ShoppingCart, User, Zap } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { Link } from 'wouter';
 
-import { useIsAuth, useUserStore } from '@/entities/user/model/user.store';
+import { isAuthAtom, logoutAction } from '@/entities/user/model/user.model';
 
-import { setAuthToken } from '@/shared/lib/fetch';
-import { routes } from '@/shared/lib/router';
+import { routes } from '@/shared/config/routes';
 import { cn } from '@/shared/lib/shadcn/utils';
 
 export const Navbar = observer(() => {
-  const { setUser } = useUserStore();
-  const isAuth = useIsAuth();
-
-  const logOut = () => {
-    setUser(null);
-    setAuthToken(null);
-  };
+  const [isAuth] = useAtom(isAuthAtom);
+  const logOut = useAction(logoutAction);
 
   const links = isAuth
     ? [

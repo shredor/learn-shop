@@ -1,12 +1,19 @@
+import { useAtom } from '@reatom/npm-react';
 import { ShoppingBag } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 
-import { useCartStore } from '@/entities/cart/model/cart.store';
+import { cartResource, cartTotalAtom, isInitialCartAtom } from '@/entities/cart/model/cart.model';
+
+import { Button } from '@/shared/ui/shadcn/button';
 
 import { CartDevice } from './CartDevice';
 
 export const CartTable = observer(() => {
-  const { cartDevices } = useCartStore();
+  const cartDevices = useAtom(cartResource.dataAtom)[0];
+  const isInitial = useAtom(isInitialCartAtom)[0];
+  const total = useAtom(cartTotalAtom)[0];
+
+  if (isInitial) return null;
 
   if (!cartDevices.length) {
     return (
@@ -20,8 +27,14 @@ export const CartTable = observer(() => {
   return (
     <div className="grid gap-4">
       {cartDevices.map((cartDevice) => (
-        <CartDevice cartDevieId={cartDevice.id} key={cartDevice.id} device={cartDevice.device} />
+        <CartDevice cartDeviceId={cartDevice.id} key={cartDevice.id} device={cartDevice.device} />
       ))}
+      <div className="flex gap-2 text-lg font-bold flex-col items-end">
+        Total: {total} €
+        <Button asChild size="lg" className="text-lg font-semibold">
+          <a href="tel:99999999">Checkout</a>
+        </Button>
+      </div>
     </div>
   );
 });

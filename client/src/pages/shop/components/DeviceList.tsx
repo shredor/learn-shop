@@ -1,25 +1,11 @@
-import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
+import { useAtom } from '@reatom/npm-react';
 
 import { DeviceCard } from '@/pages/shop/components/DeviceCard';
 
-import { deviceApi } from '@/entities/device/api/device.api';
-import { Device } from '@/entities/device/model/device.types';
+import { devicesResource } from '@/entities/device/model/device.model';
 
-import { useHistoryState } from '@/shared/lib/router/useBrowserViewTransitionPathname';
-import useAsync from '@/shared/lib/useAsync';
-
-export const DeviceList = observer(() => {
-  const { typeId, brandId } = useHistoryState() || {};
-
-  const { value: devices, execute: fetchDevices } = useAsync<Device[]>(
-    () => deviceApi.getDevices({ brandId, typeId }).then((res) => res.rows),
-    false,
-  );
-
-  useEffect(() => {
-    fetchDevices();
-  }, [fetchDevices, brandId, typeId]);
+export const DeviceList = () => {
+  const devices = useAtom(devicesResource.dataAtom)[0];
 
   if (!devices) return null;
 
@@ -30,4 +16,4 @@ export const DeviceList = observer(() => {
       ))}
     </div>
   );
-});
+};

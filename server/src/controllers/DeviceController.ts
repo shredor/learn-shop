@@ -74,7 +74,7 @@ class DeviceController {
         include: [
           [
             Sequelize.literal(
-              `(SELECT COALESCE(AVG(rate)::FLOAT, 0) FROM ratings WHERE "ratings"."deviceId" = "Device"."id")`,
+              `(SELECT COALESCE(ROUND(AVG(rate), 1)::FLOAT, 0) FROM ratings WHERE "ratings"."deviceId" = "Device"."id")`,
             ),
             'avgRating',
           ],
@@ -87,6 +87,7 @@ class DeviceController {
 
   async getOne(req: Request, res: Response) {
     const { id } = req.params;
+    const userId = req.user?.id;
 
     const device = await Device.findOne({
       where: { id },
@@ -95,9 +96,19 @@ class DeviceController {
         include: [
           [
             Sequelize.literal(
-              `(SELECT COALESCE(AVG(rate)::FLOAT, 0) FROM ratings WHERE "ratings"."deviceId" = "Device"."id")`,
+              `(SELECT COALESCE(ROUND(AVG(rate), 1)::FLOAT, 0) FROM ratings WHERE "ratings"."deviceId" = "Device"."id")`,
             ),
             'avgRating',
+          ],
+          [
+            Sequelize.literal(
+              userId
+                ? `(SELECT CASE WHEN EXISTS (
+                    SELECT 1 FROM ratings WHERE "ratings"."deviceId" = "Device"."id" AND "ratings"."userId" = ${userId}
+                  ) THEN TRUE ELSE FALSE END)`
+                : `FALSE`,
+            ),
+            'hasUserRated',
           ],
         ],
       },

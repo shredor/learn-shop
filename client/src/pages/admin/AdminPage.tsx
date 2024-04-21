@@ -7,7 +7,9 @@ import { AddBrandModal } from './components/AddBrandModal';
 import { AddDeviceModal } from './components/AddDeviceModal';
 import { AddTypeModal } from './components/AddTypeModal';
 
-console.log(import.meta.env.VITE_API_URL);
+// import { AddBrandModal } from './components/AddBrandModal';
+// import { AddDeviceModal } from './components/AddDeviceModal';
+// import { AddTypeModal } from './components/AddTypeModal';
 
 export const AdminPage = () => {
   const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);

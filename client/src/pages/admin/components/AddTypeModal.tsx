@@ -1,6 +1,9 @@
+import { useAction } from '@reatom/npm-react';
 import React, { useId, useState } from 'react';
 
-import { deviceApi } from '@/entities/device/api/device.api';
+// import { deviceApi } from '@/entities/device/api/device.api';
+
+import { addTypeAction } from '@/entities/device/model/device.model';
 
 import { Button } from '@/shared/ui/shadcn/button';
 import {
@@ -19,10 +22,11 @@ type AddTypeModalProps = {
 const AddTypeForm = ({ close }: AddTypeModalProps) => {
   const id = useId();
   const [name, setName] = useState('');
+  const addType = useAction(addTypeAction);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    deviceApi.createType(name).then(() => {
+    addType(name).then(() => {
       close();
     });
   };

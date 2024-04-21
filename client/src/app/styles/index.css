@@ -60,6 +60,7 @@
   }
 }
 
+/* todo */
 ::view-transition-old(device-card),
 ::view-transition-new(device-card) {
   height: 100%;

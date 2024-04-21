@@ -1,7 +1,8 @@
+import { omit } from '@reatom/framework';
 import { observer } from 'mobx-react-lite';
 import { Link } from 'wouter';
 
-import { useHistoryState, usePathname } from '@/shared/lib/router/useBrowserViewTransitionPathname';
+import { useHistoryState, usePathname } from '@/shared/lib/router/hooks';
 import { cn } from '@/shared/lib/shadcn/utils';
 
 type Props<T extends { id: number; name: string }> = {
@@ -26,6 +27,11 @@ export const FilterBar = observer(
         <div className="text-lg font-medium px-1">{title}</div>
         {items.map((item) => {
           const isActive = historyState[historyStateProperty] === item.id;
+
+          const nextState = isActive
+            ? omit(historyState, [historyStateProperty])
+            : { ...historyState, [historyStateProperty]: item.id };
+
           return (
             <Link
               className={cn(
@@ -35,7 +41,7 @@ export const FilterBar = observer(
                 },
               )}
               to={pathname}
-              state={{ ...historyState, [historyStateProperty]: item.id }}
+              state={nextState}
               key={item.id}
             >
               {item.name}
